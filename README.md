@@ -1,6 +1,6 @@
-# XAM300 - Advanced Cross-Platform Mobile Development 
+# XAM250 - Cross-Platform Patterns
 
-This repository contains exercises for the Xamarin University [XAM300 - Advanced Cross-Platform Mobile Development ](http://university.xamarin.com/classes/#xam300-advanced-cross-platform-development) training course.
+This repository contains exercises for the Xamarin University [XAM250 - Cross-Platform Patterns](https://university.xamarin.com/classes/track/all#xam250-crossplatformpatterns) training course.
 
 Xamarin University offers live and self-guided training on app development for Windows, iOS, and Android. Our self-guided courses are free and let you earn credit towards your Xamarin certification. You can upgrade to a full Xamarin University subscription to get unlimited live instructor-led courses from our extensive catalog and take a certification exam. Please visit [Xamarin University](https://university.xamarin.com/) to learn more or [start a trial subscrption](https://www.xamarin.com/university#request-trial).
 
