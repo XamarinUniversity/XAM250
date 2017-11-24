@@ -27,15 +27,12 @@ namespace GreatQuotes
             if (quote == null)
                 throw new ArgumentNullException("quote");
 
-            if (tts != null)
-            {
-                string text = quote.QuoteText;
-                if (!string.IsNullOrWhiteSpace(quote.Author))
-                {
-                    text += " by " + quote.Author;
-                }
-                tts.Speak(text);
-            }
+             var text = quote.QuoteText;
+
+            if (!string.IsNullOrWhiteSpace(quote.Author))
+                text += $" by {quote.Author}";
+
+            tts.Speak(text);
         }
 
         public void Save()

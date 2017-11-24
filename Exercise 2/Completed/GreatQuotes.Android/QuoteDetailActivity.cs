@@ -24,13 +24,21 @@ namespace GreatQuotes
 	        quoteText = FindViewById<TextView>(Resource.Id.quoteText);
 	        authorText = FindViewById<TextView>(Resource.Id.authorText);
 
-            quoteText.Touch += (sender, e) => {
-	            var qm = QuoteManager.Instance;
-	            qm.SayQuote(qm.Quotes[quoteIndex]);
-            };
+            quoteText.Touch += QuoteText_Touch;
 	    }
 
-	    protected override void OnResume()
+        protected override void OnDestroy()
+        {
+            quoteText.Touch -= QuoteText_Touch;
+        }
+
+        void QuoteText_Touch(object sender, View.TouchEventArgs e)
+        {
+            var qm = QuoteManager.Instance;
+            qm.SayQuote(qm.Quotes[quoteIndex]);
+        }
+
+        protected override void OnResume()
 		{
 			base.OnResume();
 

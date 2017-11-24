@@ -26,15 +26,13 @@ namespace GreatQuotes
                 throw new ArgumentNullException("quote");
 
             ITextToSpeech tts = ServiceLocator.Instance.Resolve<ITextToSpeech>();
-            if (tts != null)
-            {
-                string text = quote.QuoteText;
-                if (!string.IsNullOrWhiteSpace(quote.Author))
-                {
-                    text += " by " + quote.Author;
-                }
-                tts.Speak(text);
-            }
+
+            var text = quote.QuoteText;
+
+            if (!string.IsNullOrWhiteSpace(quote.Author))
+                text += $" by {quote.Author}";
+
+            tts.Speak(text);
         }
 
         public void Save()
