@@ -3,57 +3,57 @@ using UIKit;
 
 namespace GreatQuotes
 {
-	partial class QuoteDetailViewController : UIViewController
-	{
-		GreatQuote quote;
+     partial class QuoteDetailViewController : UIViewController
+     {
+          GreatQuote quote;
 
-		public QuoteDetailViewController (IntPtr handle) : base (handle)
-		{
-		}
+          public QuoteDetailViewController (IntPtr handle) : base (handle)
+          {
+          }
 
-		public void SetQuote(GreatQuote value)
-		{
-			quote = value;
-			UpdateView();
-		}
+          public void SetQuote(GreatQuote value)
+          {
+               quote = value;
+               UpdateView();
+          }
 
-		public override void ViewWillAppear(bool animated)
-		{
-			base.ViewWillAppear(animated);
+          public override void ViewWillAppear(bool animated)
+          {
+               base.ViewWillAppear(animated);
 
-			UpdateView();
+               UpdateView();
 
-			// Adjust the font size.
-			float size = 32;
-			Quote.Font = UIFont.FromName("Helvetica-LightOblique", size);
-			while (Quote.SizeThatFits(Quote.Frame.Size).Height >= Quote.Frame.Size.Height-10) {
-				Quote.Font = UIFont.FromName("Helvetica-LightOblique", --size);
-			}
-		}
+               // Adjust the font size.
+               float size = 32;
+               Quote.Font = UIFont.FromName("Helvetica-LightOblique", size);
+               while (Quote.SizeThatFits(Quote.Frame.Size).Height >= Quote.Frame.Size.Height-10) {
+                    Quote.Font = UIFont.FromName("Helvetica-LightOblique", --size);
+               }
+          }
 
-		public override void ViewDidLoad()
-		{
-			base.ViewDidLoad();
+          public override void ViewDidLoad()
+          {
+               base.ViewDidLoad();
 
-			var editButton = new UIBarButtonItem(UIBarButtonSystemItem.Edit, OnEditItem);
-			NavigationItem.RightBarButtonItem = editButton;
+               var editButton = new UIBarButtonItem(UIBarButtonSystemItem.Edit, OnEditItem);
+               NavigationItem.RightBarButtonItem = editButton;
 
             Quote.AddGestureRecognizer(new UITapGestureRecognizer(() => QuoteManager.Instance.SayQuote(quote)));
         }
 
-		void OnEditItem(object sender, EventArgs e)
-		{
-			var editQuoteVC = (EditQuoteViewController) this.Storyboard.InstantiateViewController("EditQuote");
-			editQuoteVC.SetQuote(quote);
-			NavigationController.PushViewController(editQuoteVC, true);
-		}
+          void OnEditItem(object sender, EventArgs e)
+          {
+               var editQuoteVC = (EditQuoteViewController) this.Storyboard.InstantiateViewController("EditQuote");
+               editQuoteVC.SetQuote(quote);
+               NavigationController.PushViewController(editQuoteVC, true);
+          }
 
-		void UpdateView()
-		{
-			if (IsViewLoaded && quote != null) {
-				Author.Text = quote.Author;
-				Quote.Text = "\"" + quote.QuoteText + "\"";
-			}
-		}
-	}
+          void UpdateView()
+          {
+               if (IsViewLoaded && quote != null) {
+                    Author.Text = quote.Author;
+                    Quote.Text = "\"" + quote.QuoteText + "\"";
+               }
+          }
+     }
 }

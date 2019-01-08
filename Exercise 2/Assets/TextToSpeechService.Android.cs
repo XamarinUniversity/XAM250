@@ -7,18 +7,18 @@ using Android.OS;
 
 namespace GreatQuotes
 {
-	public class TextToSpeechService : Java.Lang.Object, ITextToSpeech, TextToSpeech.IOnInitListener
-	{
-		TextToSpeech speech;
-		string lastText;
+     public class TextToSpeechService : Java.Lang.Object, ITextToSpeech, TextToSpeech.IOnInitListener
+     {
+          TextToSpeech speech;
+          string lastText;
 
-		public void Speak(string text)
-		{
-			if (speech == null) {
-				lastText = text;
-				speech = new TextToSpeech(Application.Context, this);
-			}
-			else {
+          public void Speak(string text)
+          {
+               if (speech == null) {
+                    lastText = text;
+                    speech = new TextToSpeech(Application.Context, this);
+               }
+               else {
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
                     speech.Speak(text, QueueMode.Flush, null, null);
                 else
@@ -27,12 +27,12 @@ namespace GreatQuotes
                     speech.Speak(text, QueueMode.Flush, null);
                     #pragma warning restore 0618
                 }
-			}
-		}
+               }
+          }
 
-		public void OnInit(OperationResult status)
-		{
-			if (status == OperationResult.Success) {
+          public void OnInit(OperationResult status)
+          {
+               if (status == OperationResult.Success) {
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
                     speech.Speak(lastText, QueueMode.Flush, null, null);
                 else
@@ -41,9 +41,9 @@ namespace GreatQuotes
                     speech.Speak(lastText, QueueMode.Flush, null);
                     #pragma warning restore 0618
                 }
-				lastText = null;
-			}
-		}
-	}
+                    lastText = null;
+               }
+          }
+     }
 }
 

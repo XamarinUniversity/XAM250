@@ -4,25 +4,25 @@ using Android.Widget;
 
 namespace GreatQuotes
 {
-	[Activity(Label = "@string/edit_quote")]			
-	public class EditQuoteActivity : Activity
-	{
-		int quoteIndex;
+     [Activity(Label = "@string/edit_quote")]               
+     public class EditQuoteActivity : Activity
+     {
+          int quoteIndex;
 
-		protected override void OnCreate(Bundle bundle)
-		{
-			base.OnCreate(bundle);
+          protected override void OnCreate(Bundle bundle)
+          {
+               base.OnCreate(bundle);
 
-			quoteIndex = Intent.Extras.GetInt("quoteIndex");
-			var quote = App.Quotes[quoteIndex];
+               quoteIndex = Intent.Extras.GetInt("quoteIndex");
+               var quote = App.Quotes[quoteIndex];
 
-			SetContentView(Resource.Layout.EditQuote);
+               SetContentView(Resource.Layout.EditQuote);
 
-			TextView quoteText = FindViewById<TextView>(Resource.Id.quoteText);
-			TextView authorText = FindViewById<TextView>(Resource.Id.authorText);
+               TextView quoteText = FindViewById<TextView>(Resource.Id.quoteText);
+               TextView authorText = FindViewById<TextView>(Resource.Id.authorText);
 
-			quoteText.Text = quote.QuoteText;
-			authorText.Text = quote.Author;
+               quoteText.Text = quote.QuoteText;
+               authorText.Text = quote.Author;
 
             Button saveButton = FindViewById<Button>(Resource.Id.saveButton);
             saveButton.Click += (sender, e) => 
@@ -41,13 +41,13 @@ namespace GreatQuotes
                 quote.Author = authorText.Text;
                 Finish();
             };
-		}
+          }
 
-		protected override void OnPause()
-		{
-			base.OnPause();
-			App.Save();
-		}
-	}
+          protected override void OnPause()
+          {
+               base.OnPause();
+               App.Save();
+          }
+     }
 }
 

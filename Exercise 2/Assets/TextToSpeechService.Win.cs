@@ -5,10 +5,10 @@ using Windows.UI.Xaml.Controls;
 
 namespace GreatQuotes
 {
-	public class TextToSpeechService : ITextToSpeech
-	{
-		public async void Speak(string text)
-		{
+     public class TextToSpeechService : ITextToSpeech
+     {
+          public async void Speak(string text)
+          {
             var mediaPronunciation = new MediaElement();
             try
             {
@@ -19,12 +19,12 @@ namespace GreatQuotes
                     mediaPronunciation.SetSource(voiceStream, voiceStream.ContentType);
                     mediaPronunciation.Play();
                 }
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex.ToString());
-			}
-		}
-	}
+               }
+               catch (Exception ex)
+               {
+                    Debug.WriteLine(ex.ToString());
+               }
+          }
+     }
 }
 
