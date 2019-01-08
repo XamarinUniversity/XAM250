@@ -4,28 +4,28 @@ using Android.Runtime;
 
 namespace GreatQuotes
 {
-	[Application(Icon="@drawable/icon", Label="@string/app_name")]
-	public class App : Application
-	{
-		readonly SimpleContainer container = new SimpleContainer();
+     [Application(Icon="@drawable/icon", Label="@string/app_name")]
+     public class App : Application
+     {
+          readonly SimpleContainer container = new SimpleContainer();
 
-		public App(IntPtr h, JniHandleOwnership jho) : base(h, jho)
-		{
-		}
+          public App(IntPtr h, JniHandleOwnership jho) : base(h, jho)
+          {
+          }
 
-		public override void OnCreate()
-		{
-			container.Register<IQuoteLoader, QuoteLoader>();
+          public override void OnCreate()
+          {
+               container.Register<IQuoteLoader, QuoteLoader>();
             container.Register<ITextToSpeech, TextToSpeechService>();
-			container.Create<QuoteManager>();
+               container.Create<QuoteManager>();
 
-			base.OnCreate();
-		}
+               base.OnCreate();
+          }
 
-		public static void Save()
-		{
-			QuoteManager.Instance.Save();
-		}
-	}
+          public static void Save()
+          {
+               QuoteManager.Instance.Save();
+          }
+     }
 }
 
