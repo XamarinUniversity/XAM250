@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 2: Add an abstraction and Service Locator into our project to find and use a platform-specific feature. (XAM250)</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM250 Patterns for Cross Platform Mobile Development</header>
+
+    <section id="main">
+        <h2>Exercise 2: Add an abstraction and Service Locator into our project to find and use a platform-specific feature. (XAM250)</h2>
+<p>This exercise will define a service for performing text-to-speech and then create a <strong>Service Locator</strong> to find the implementation of that service which is platform-specific. This is intended to be done as part of the online class, if you are working through this on your own you can follow the step-by-step instructions shown below.</p>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>Open the starter solution from the <strong>Exercise 2</strong> &gt; <strong>Start</strong> folder in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM250/">course materials</a> in either <strong>Visual Studio</strong> on Windows or <strong>Visual Studio for Mac</strong>.</p>
+
+<hr>
+<h2>Define the abstraction</h2>
+<p>Let's start by defining our abstraction - you'll have each platform use it's Text-To-Speech engine to read stored quotes to the user. The first step is to define an interface called <code>ITextToSpeech</code> with a single method called <code>Speak</code>. This needs to go in your shared code. You'll place it in the <strong>GreatQuotes.Data</strong> PCL.</p>
+<ol>
+<li>Open the starter project <strong>GreatQuotes.sln</strong> or continue with the previous exercise.</li>
+<li>Create a new interface source file in the PCL project, name it <strong>ITextToSpeech.cs</strong>.</li>
+<li>Make the interface public so it can be used outside the PCL.</li>
+<li>Add a single method to the interface named <code>Speak</code> that returns <code>void</code> and takes a single <code>string</code> parameter.</li>
+</ol>
+<pre class="prettyprint-collapse"><code>namespace GreatQuotes
+{
+    public interface ITextToSpeech
+    {
+        void Speak(string text);
+    }
+}
+</code></pre>
+
+
+<hr>
+<h2>Add the service locator</h2>
+<p>Next, you're going to add a service locator - you could write this from scratch, but to save time you can add an existing implementation that has already been written.</p>
+<ol>
+<li>The code is in the <strong>Exercise 2</strong> &gt; <strong>Assets</strong> folder - add the file into the <strong>GreatQuotes.Data</strong> PCL's <strong>Assets</strong> folder. Make sure to copy the file into the project and not move it.</li>
+<li>
+Examine the new source file you have added. It associates a contract <code>Type</code> with an implementation by saving the registration off in a dictionary.
+<ul>
+<li>There is a static <code>Instance</code> property to retrieve the singleton locator object.</li>
+<li>It has a <code>Add</code> method to register a type with an implementation.</li>
+<li>You use the <code>Resolve&lt;T&gt;</code> method to locate an implementation based on the abstraction.</li>
+</ul>
+</li>
+</ol>
+
+<hr>
+<h2>Add the Text-to-Speech implementations</h2>
+<p>Register your implementations for the Text-to-Speech functionality in each of the platform-specific projects.</p>
+<ol>
+<li>Add implementations of the TTS engine for each platform. You've got three of them in your <strong>assets</strong> folder in the <strong>Exercise 2</strong> folder, one for each of our platforms.</li>
+<li>
+Add each one into the appropriate platform-specific project based on the name
+<ul>
+<li><strong>TextToSpeechService.Android.cs</strong> goes into the Android project.</li>
+<li><strong>TextToSpeechService.iOS.cs</strong> goes into the iOS project.</li>
+<li><strong>TextToSpeechService.Win.cs</strong> goes into the UWP project.</li>
+</ul>
+</li>
+<li>Feel free to examine the source for each implementation - make sure the interface is correctly defined and implemented and build the projects.</li>
+</ol>
+
+<hr>
+<h2>Register the implementations with the abstraction</h2>
+<p>Use your <strong>Service Locator</strong> and register each implementation in the platform code against the <code>ITextToSpeech</code> interface.</p>
+<ol>
+<li>
+Use the <code>Add</code> method on the service locator in the platform-specific project to tie the <code>TextToSpeechService</code> class to the <code>ITextToSpeech</code> interface.
+<ul>
+<li>Register the iOS version in the <strong>AppDelegate.cs</strong> file as part of <code>FinishedLaunching</code>.</li>
+<li>Register the Android version in the <code>App.cs</code> file as part of the <code>App.OnCreate</code> override.</li>
+<li>Register the Windows version in the <code>App.xaml.cs</code> file as part of the <code>App</code> constructor.</li>
+</ul>
+</li>
+</ol>
+<pre class="prettyprint-collapse"><code>ServiceLocator.Instance.Add&lt;ITextToSpeech, TextToSpeechService&gt;();
+</code></pre>
+
+
+<hr>
+<h2>Use the TTS service</h2>
+<p>Finally, add support to call the Text-to-Speech service in your shared code and invoke it from each platform.</p>
+<ol>
+<li>Add a method to the shared <strong>QuoteManager.cs</strong> class which will invoke the TTS service.</li>
+<li>Name the method <code>SayQuote</code> and have it take a <code>GreateQuote</code> as the parameter.</li>
+<li>Lookup the <code>ITextToSpeech</code> abstraction using the service locator <code>Resolve</code> method.</li>
+<li>
+<p>Make sure the returning value is not <code>null</code> and if not, use the <code>Speak</code> method to say the quote and author.</p>
+<pre class="prettyprint-collapse"><code>public class QuoteManager
+{
+    ...
+    public void SayQuote(GreatQuote quote)
+    {
+        if (quote == null)
+            throw new ArgumentNullException(&quot;quote&quot;);
+
+        ITextToSpeech tts = ServiceLocator.Instance.Resolve&lt;ITextToSpeech&gt;();
+
+        var text = quote.QuoteText;
+
+        if (!string.IsNullOrWhiteSpace(quote.Author))
+           text += $&quot; by {quote.Author}&quot;;
+
+        tts.Speak(text);
+    }
+}
+</code></pre>
+
+</li>
+<li>
+You need to call this new method for each platform on the Details screen. This will be in the platform specific code, which is using this quote object. Use the following code to invoke the logic.
+</li>
+<li>
+<p>In iOS, add the code to the <strong>QuoteDetailViewController.cs</strong> <code>ViewDidLoad</code> method.</p>
+<pre class="prettyprint"><code>public override void ViewDidLoad()
+{
+    base.ViewDidLoad();
+    ...
+    NavigationItem.RightBarButtonItem = editButton;
+    <mark>Quote.AddGestureRecognizer(new UITapGestureRecognizer(() =&gt; QuoteManager.Instance.SayQuote(quote)));</mark>
+}
+</code></pre>
+
+</li>
+<li>
+In the Android project, open  <strong>QuoteDetailActivity.cs</strong>.
+</li>
+<li>
+<p>In the <strong>OnCreate</strong> method, subscribe to the <strong>quoteText</strong> <code>Touch</code> event, create a handler method and add the following code.</p>
+<pre class="prettyprint"><code>protected override void OnCreate(Bundle bundle)
+{
+    base.OnCreate(bundle);
+    ...
+    quoteText.Touch += QuoteText_Touch;
+}
+
+void QuoteText_Touch(object sender, View.TouchEventArgs e)
+{
+    <mark>var qm = QuoteManager.Instance;
+    qm.SayQuote(qm.Quotes[quoteIndex]);</mark>
+}
+</code></pre>
+
+</li>
+<li>
+Override <code>OnDestroy</code> and unsubscribe the <code>Touch</code> event handler.
+</li>
+<li>
+<p>Finally, in Windows, it will be in the <strong>QuoteDetailsPage</strong>. Add a <code>PointerPressed</code> event handler onto the first <code>TextBlock</code> which is displaying the quote text and in the event handler implementation use the following code:</p>
+<pre class="prettyprint"><code>private void OnSayQuote(object sender, PointerRoutedEventArgs e)
+{
+    QuoteManager.Instance.SayQuote((GreatQuote)DataContext);
+}
+</code></pre>
+
+</li>
+<li>
+Build and run the application on as many implementations as you can.
+</li>
+<li>Set some breakpoints and trace through the service locator to see how it finds the implementation and then invokes the service.</li>
+</ol>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this lab exercise, you utilized a <strong>Service Locator</strong> pattern to abstract away a platform-specific feature and then invoke it from shared code.</p>
+<p>You can view the completed solution in the <strong>Exercise 2</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM250/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>

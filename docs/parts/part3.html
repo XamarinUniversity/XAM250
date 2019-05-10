@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>Exercise 3: Switch to a DI/IoC container and inject our dependency into our code. (XAM250)</title>
+    <link rel="stylesheet" type="text/css" href="./res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./res/styles/prettify.css" />
+    <link rel="stylesheet" type="text/css" href="./res/styles/styles.css">
+</head>
+
+<body>
+    <!-- Use the same title as the StartHere -->
+    <header>XAM250 Patterns for Cross Platform Mobile Development</header>
+
+    <section id="main">
+        <h2>Exercise 3: Switch to a DI/IoC container and inject our dependency into our code. (XAM250)</h2>
+<p>This final exercise will replace the <strong>Factory pattern</strong> used in the first exercise with a <strong>Dependency Injection (DI) container</strong> that will supply the quote loader as part of the constructor. You'll then optionally, remove the <strong>Service Locator</strong> as well and just use the DI/IoC container injection approach.</p>
+<blockquote class="info-quote">To complete the exercise, you will need <a href="https://www.visualstudio.com/" target="_blank">Visual Studio for Windows or macOS</a> with the <a href="https://visualstudio.microsoft.com/xamarin/" target="_blank">Xamarin development tools</a> installed. You will also need either an emulator/simulator or a device to run the exercise on. Please see the <a href="https://docs.microsoft.com/xamarin/cross-platform/get-started/installation/" target="_blank">setup page</a> if you need help installing the Xamarin development environment.
+</blockquote>
+
+<hr>
+<h2>Open the starter solution</h2>
+<p>Open the starter solution from the <strong>Exercise 3</strong> &gt; <strong>Start</strong> folder in your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM250/">course materials</a> in either <strong>Visual Studio</strong> on Windows or <strong>Visual Studio for Mac</strong>.</p>
+
+<hr>
+<h2>Adding the DI/IoC container</h2>
+<ol>
+<li>
+<p>In the <strong>Assets</strong> folder under <strong>Exercise 3</strong> you will find a <code>SimpleContainer</code> class. This is a very simple implementation of an IoC container that allows you to register and create types. Add it into your PCL.</p>
+<blockquote class="info-quote">You'll use this as an example - but keep in mind that it is deliberately simplified so you can see the concepts involved and trace through the code if you like. For non-sample applications you should consider a real IoC container.
+</blockquote>
+</li>
+<li>
+<p>Examine the code; it has two methods (with two variations on each):</p>
+<table>
+<thead>
+<tr>
+	<th>Method</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td><code>Register</code></td>
+	<td>This is used to register known abstractions with the container. You register a creator <em>function</em> with the abstraction type so it may be created, or just pass the implementation type if it has a default constructor. It allows the container to resolve interfaces to types similar to a Service Locator. You could also use a Service Locator for this purpose if you wanted to.</td>
+</tr>
+<tr>
+	<td><code>FactoryFor&lt;T&gt;</code></td>
+	<td>This method is used to create a factory method which will create the <strong>T</strong> type. It returns a <code>Func&lt;T&gt;</code> where the implementation goes through the container to generate the type. This can be used to create factory methods so consumers do not have to have a reference to the container itself.</td>
+</tr>
+<tr>
+	<td><code>Create</code></td>
+	<td>This method is used to create types. If the type is a registered type, then the associated registration method is used. Otherwise, if the type has a public, default constructor, then it will be used to create the object. If the type does not, then the code will pick the first public constructor and attempt to create each of the required parameters by recursively calling <code>Create</code> and then finally construct the final object passing each of the parameters. If it is unable to create the given type, a <code>null</code> is returned.</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+
+<hr>
+<h2>Modify the Quote Manager to take constructor parameters</h2>
+<p>Next, change the code in the <code>QuoteManager</code> class to inject the <code>IQuoteLoader</code> dependency as a constructor parameter.</p>
+<ol>
+<li>Open the <code>QuoteManager</code> and add a new parameter to the constructor of type <code>IQuoteLoader</code>. Assign the passed parameter to a field. Make sure to remove the existing code that uses the Factory approach.</li>
+<li>Change the constructor to be <code>public</code> so you can create it externally.</li>
+<li>
+<p>Change the static <code>Instance</code> property to have a private setter and remove the existing <code>Lazy</code> field. Instead, assign the <code>Instance</code> property in the constructor - make sure to add a check to ensure it's not set more than once to enforce the singleton pattern being used.</p>
+<pre class="prettyprint-collapse"><code>public class QuoteManager
+{
+    public static QuoteManager Instance { get; <mark>private set;</mark> }
+
+    readonly IQuoteLoader loader;
+    public IList&lt;GreatQuote&gt; Quotes { get; private set; }
+
+    <mark>public</mark> QuoteManager(<mark>IQuoteLoader loader</mark>)
+    {
+        <mark>if (Instance != null) {</mark>
+        <mark>    throw new Exception(&quot;Can only create a single QuoteManager.&quot;);</mark>
+        <mark>}</mark>
+        <mark>Instance = this;</mark>
+        this.loader = loader;
+        Quotes = new ObservableCollection&lt;GreatQuote&gt;(loader.Load());
+    }
+    ...
+}
+</code></pre>
+
+</li>
+</ol>
+
+<hr>
+<h2>Setup the DI container</h2>
+<p>Finally, you need to create the container in each of your platform-specific projects and register the <code>IQuoteLoader</code> implementation with it. Then you'll use the container to create our <code>QuoteManager</code> so that it properly &quot;injects&quot; in the constructor parameters required. You'll repeat the same basic steps in each project (iOS, Android and Windows).</p>
+<ol>
+<li>Open the file which sets up the factory used to locate the <code>IQuoteLoader</code> implementation. In iOS, this is <strong>AppDelegate.cs</strong>, Android uses <code>App.cs</code> and Windows has <strong>App.xaml.cs</strong>.</li>
+<li>Add a new <code>SimpleContainer</code> field to the application-level class and new up an instance of the container.</li>
+<li>Remove the current factory registration code - this is in <code>FinishedLaunching</code> in iOS, <code>OnCreate</code> in Android and in the <code>App</code> constructor in Windows.</li>
+<li>Next, register the <code>IQuoteLoader</code> abstraction with the proper platform-specific implementations using the container's <code>Register&lt;T, TImpl&gt;</code> method.</li>
+<li>Finally, create the <code>QuoteManager</code> instance with the container's <code>Create</code> method and assign it to the existing field you are using now.</li>
+<li>Run the application on one of the supported platforms and make sure it all still works - try putting a breakpoint into the <code>QuoteManager</code> constructor to see the injected parameter - look at the call stack to see how you got it.</li>
+</ol>
+<h2>iOS code</h2>
+<pre class="prettyprint-collapse"><code>// AppDelegate.cs
+public partial class AppDelegate : UIApplicationDelegate
+{
+  <mark>readonly SimpleContainer container = new SimpleContainer();</mark>
+
+  public override UIWindow Window { get; set; }
+
+  public override void FinishedLaunching(UIApplication application)
+  {
+    //QuoteLoaderFactory.Create = () =&gt; new QuoteLoader();
+    <mark>container.Register&lt;IQuoteLoader, QuoteLoader&gt;();</mark>
+    <mark>container.Create&lt;QuoteManager&gt;();</mark>
+  }
+  ...
+}
+</code></pre>
+
+<h2>Android code</h2>
+<pre class="prettyprint-collapse"><code>// App.cs
+public class App : Application
+{
+  <mark>readonly SimpleContainer container = new SimpleContainer();</mark>
+  ...
+
+  public override void OnCreate()
+  {
+    //QuoteLoaderFactory.Create = () =&gt; new QuoteLoader();
+    <mark>container.Register&lt;IQuoteLoader, QuoteLoader&gt;();</mark>
+    <mark>container.Create&lt;QuoteManager&gt;();</mark>
+
+    ServiceLocator.Instance.Add&lt;ITextToSpeech, TextToSpeechService&gt;();
+
+    base.OnCreate();
+  }
+}
+</code></pre>
+
+<h2>Windows code</h2>
+<pre class="prettyprint-collapse"><code>// App.xaml.cs
+sealed partial class App : Application
+{
+    <mark>readonly SimpleContainer container = new SimpleContainer();</mark>
+
+    public App()
+    {
+        //QuoteLoaderFactory.Create = () =&gt; new QuoteLoader();
+        <mark>container.Register&lt;IQuoteLoader, QuoteLoader&gt;();</mark>
+        <mark>container.Create&lt;QuoteManager&gt;();</mark>
+
+        ServiceLocator.Instance.Add&lt;ITextToSpeech, TextToSpeechService&gt;();
+
+        this.InitializeComponent();
+        this.Suspending += OnSuspending;
+    }
+    ...
+}
+</code></pre>
+
+
+<hr>
+<h2>Extra challenge: Refactor</h2>
+<p>The container is being used to create the <code>QuoteManager</code> with a passed <code>IQuoteLoader</code> to load the quotes. The <code>QuoteManager</code> also uses the <code>ITextToSpeech</code> implementation which is located through the <strong>Service Locator</strong> you added in the last lab. What if you wanted to remove this dependency and instead have it injected as well? There is a final <strong>Challenge</strong> completed solution in the <strong>Exercise 3</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM250/">course materials</a>.</p>
+
+<hr>
+<h2>Exercise summary</h2>
+<p>In this exercise, you've taken an existing application and utilized a DI/IoC container to loosely couple dependencies together.</p>
+<p>You can view the completed solution in the <strong>Exercise 3</strong> &gt; <strong>Completed</strong> folder of your copy of the cloned or downloaded <a href="https://github.com/XamarinUniversity/XAM250/">course materials</a>.</p>
+
+
+        <div class="align-right">
+            <a href="../StartHere.html">Go Back</a>
+        </div>
+
+    </section>
+
+    <script src="./res/js/jquery.min.js"></script>
+    <script src="./res/js/jquery.imagemapster.min.js"></script>
+    <script src="./res/js/imagemap.js"></script>
+    <script src="./res/js/prettify.js"></script>
+    <script src="./res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>
