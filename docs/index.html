@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+    <title>XAM250 Patterns for Cross Platform Mobile Development</title>
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/normalize.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/prettify.css">
+    <link rel="stylesheet" type="text/css" href="./parts/res/styles/styles.css">
+</head>
+
+<body>
+    <!-- This will be filled in at runtime -->
+    <header role="course-title"></header>
+    <section id="main">
+        <h2>Patterns for Cross Platform Mobile Development - XAM250</h2>
+<p>Sometimes you need to access platform-specific APIs that are not intrinsically available from your shared code. For example, you might want to take a picture, perform file I/O, or play audio. The recommended approach is to code an abstraction layer that will let you invoke the platform-specific API from shared code. This course shows you three techniques for doing this: Factory pattern, Service Locator pattern, and Dependency Injection.</p>
+<h3>Upon completion you will be able to:</h3>
+<ul>
+<li>Locate dependencies using the Factory Pattern</li>
+<li>Use a Service Locator to register and retrieve dependencies</li>
+<li>Use an IoC container to automatically inject dependencies</li>
+</ul>
+<h3>Course exercise download</h3>
+<p>Exercise materials are available from <a href="https://github.com/XamarinUniversity/XAM250/">GitHub</a>. The code can be cloned through a desktop Git client or <a href="https://github.com/XamarinUniversity/XAM250/archive/master.zip">downloaded directly</a> as a ZIP file.</p>
+<blockquote class="info-quote">If you are using Windows, try to select a location with a shorter path length to make sure you don't exceed the 260 character limit.
+</blockquote>
+<h2>Lecture</h2>
+<p>Here are the <a target="_blank" href="./parts/slides.pdf">lecture slides</a>.</p>
+<h2>Exercises</h2>
+<ol>
+<li>
+<a href="parts/part1.html">Exercise 1: Use the Factory Pattern to access a dependency from shared code (XAM250)</a>
+<br>
+<p>This exercise will take an existing iOS, Android, or Windows project and pull out sharable code into a Portable Class Library (PCL), using the <a href="http://www.oodesign.com/factory-pattern.html" target="_blank">Factory Pattern</a> to isolate the platform-specific code to read and write the storage file used to display quotes.</p>
+</li>
+<li>
+<a href="parts/part2.html">Exercise 2: Add an abstraction and Service Locator into our project to find and use a platform-specific feature. (XAM250)</a>
+<br>
+<p>This exercise will define a service for performing text-to-speech and then create a <strong>Service Locator</strong> to find the implementation of that service which is platform-specific. This is intended to be done as part of the online class, if you are working through this on your own you can follow the step-by-step instructions shown below.</p>
+</li>
+<li>
+<a href="parts/part3.html">Exercise 3: Switch to a DI/IoC container and inject our dependency into our code. (XAM250)</a>
+<br>
+<p>This final exercise will replace the <strong>Factory pattern</strong> used in the first exercise with a <strong>Dependency Injection (DI) container</strong> that will supply the quote loader as part of the constructor. You'll then optionally, remove the <strong>Service Locator</strong> as well and just use the DI/IoC container injection approach.</p>
+</li>
+</ol>
+
+            <!-- This section is for additional links and examples that are relevant to 
+                the material in this course -->
+            <h2>Additional resources</h2>
+                <h3>Additional Documentation</h3>
+                <div class="wslist">
+                    <a target="_blank" href="http://msdn.microsoft.com/en-us/library/ee817667.aspx">Exploring the Factory Pattern (MSDN)</a>        
+                    <a target="_blank" href="https://commonservicelocator.codeplex.com/">Common Service Locator (Microsoft P&amp;P)</a>        
+                    <a target="_blank" href="http://martinfowler.com/articles/injection.html">Inversion of Control Containers and the Dependency Injection pattern (Martin Fowler)</a>        
+                    <a target="_blank" href="http://msdn.microsoft.com/en-us/magazine/cc163739.aspx">Dependency Injection (MSDN Magazine)</a>        
+                    <a target="_blank" href="https://RobGibbens.com/ioc-containers-with-xamarin/">IoC Containers with Xamarin</a>        
+                </div>
+    </section>
+    <script src="./parts/res/js/jquery.min.js"></script>
+    <script src="./parts/res/js/prettify.js"></script>
+    <script src="./parts/res/js/script.js"></script>
+
+    <footer>Copyright (C) 2018 Xamarin Inc., Microsoft. All rights reserved.<br><a target="_blank" href="http://university.xamarin.com">Visit Xamarin University for more classes and content</a></footer>
+
+</body>
+</html>
